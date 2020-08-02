@@ -1,0 +1,34 @@
+version: '3.0'
+
+services:
+  
+  nginx:
+    image: ${PROJECT_NAME}-nginx
+    container_name: ${PROJECT_NAME}-nginx
+    build: ./nginx
+    ports:
+    - "80:80"
+    volumes:
+    - ${APP_DIR}:/usr/share/www 
+  
+  php-fpm:
+    image: ${PROJECT_NAME}-php-fpm
+    container_name: ${PROJECT_NAME}-php-fpm
+    build: ./php-fpm
+    volumes:
+    - ${APP_DIR}:/usr/share/www 
+  
+  db:
+    image: ${PROJECT_NAME}-postgres
+    container_name: ${PROJECT_NAME}-postgres
+    build: ./postgresql
+    restart: unless-stopped 
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE_NAME}
+    volumes:
+    - ${APP_DIR}${DB_DATA_DIR}:/var/lib/postgresql/data
+    # export db port for development only 
+    ports:
+    - 5432:5432
